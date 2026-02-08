@@ -1,37 +1,42 @@
 ---
 name: shell-linter
-description: Lint bash scripts for common mistakes, security issues, and style violations with actionable fix suggestions.
+description: A shell script linter that checks bash scripts for common mistakes, security issues, and style violations with actionable fix suggestions.
 version: 0.1.0
 license: Apache-2.0
+entry: scripts/run.sh
 ---
 
-# Shell Script Linter
+# shell-linter
 
-## Purpose
+A static analysis tool for bash scripts that catches common mistakes, security issues, and style violations before they cause problems in production.
 
-Checks bash/shell scripts for common mistakes, security vulnerabilities, and style violations. Reports issues with file, line number, severity, and a fix suggestion. Catches unquoted variables, missing error handling, unsafe temp files, and POSIX compatibility issues.
+## Features
 
-## Instructions
+- **Error detection**: Missing shebang, unquoted variables, eval usage, backtick substitution, missing error handling
+- **Warning detection**: Unsafe temp files, unchecked cd, useless cat, unbraced variables, legacy test syntax
+- **Info detection**: Long lines, TODO/FIXME comments, uppercase variable naming conventions
+- **Multiple output formats**: Human-readable text and machine-parseable JSON
+- **Severity filtering**: Show only errors, warnings, or info-level findings
+- **Actionable fixes**: Every finding includes a concrete suggestion for how to fix it
 
-1. Run `python3 scripts/run.py` with one or more shell script paths as arguments.
-2. The tool reads each file and applies pattern-based checks.
-3. Issues are reported to stdout, one per line, in the format: `file:line: [severity] message (fix: suggestion)`.
-4. Exit code is 0 if no errors found, 1 if errors found, 2 for usage errors.
+## Usage
 
-## Inputs
+```bash
+# Lint a single script
+./scripts/run.sh myscript.sh
 
-- **Positional arguments**: One or more paths to shell script files (.sh, .bash, or any file).
-- **`--severity`** (optional): Minimum severity to report: `info`, `warning`, `error`. Default: `info`.
-- **`--format`** (optional): Output format: `text` (default) or `json`.
+# Lint multiple scripts
+./scripts/run.sh script1.sh script2.sh
 
-## Outputs
+# JSON output
+./scripts/run.sh --format=json myscript.sh
 
-- Issues printed to stdout, one per line.
-- Summary line at the end: `N issues found (E errors, W warnings, I info)`.
-- JSON format outputs an array of issue objects.
+# Only show errors
+./scripts/run.sh --severity=error myscript.sh
+```
 
-## Constraints
+## Exit Codes
 
-- Pattern-based analysis only (no AST parsing).
-- May produce false positives for complex quoting scenarios.
-- Does not execute the scripts being analyzed.
+- `0` - No errors found (warnings and info are non-fatal)
+- `1` - One or more errors found
+- `2` - File access error (file not found, not readable)
